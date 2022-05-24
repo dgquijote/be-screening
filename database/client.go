@@ -1,8 +1,9 @@
 package database
 
 import (
-	"delivery-app/models"
 	"log"
+
+	"github.com/dgquijote/be-screening/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

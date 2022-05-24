@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"delivery-app/models"
 	"net/http"
+
+	"github.com/dgquijote/be-screening/models"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,4 +1,4 @@
-module delivery-app
+module github.com/dgquijote/be-screening
 
 go 1.18
 

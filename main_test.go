@@ -2,12 +2,13 @@ package main
 
 import (
 	"bytes"
-	"delivery-app/controllers"
-	"delivery-app/database"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/dgquijote/be-screening/controllers"
+	"github.com/dgquijote/be-screening/database"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"delivery-app/auth"
-	"delivery-app/database"
-	"delivery-app/models"
 	"net/http"
+
+	"github.com/dgquijote/be-screening/auth"
+	"github.com/dgquijote/be-screening/database"
+	"github.com/dgquijote/be-screening/models"
 
 	"github.com/gin-gonic/gin"
 )

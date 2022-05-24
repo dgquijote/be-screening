@@ -1,9 +1,9 @@
 package main
 
 import (
-	"delivery-app/controllers"
-	"delivery-app/database"
-	"delivery-app/middlewares"
+	"github.com/dgquijote/be-screening/controllers"
+	"github.com/dgquijote/be-screening/database"
+	"github.com/dgquijote/be-screening/middlewares"
 
 	"github.com/gin-gonic/gin"
 )

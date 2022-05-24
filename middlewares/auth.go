@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"delivery-app/auth"
+	"github.com/dgquijote/be-screening/auth"
 
 	"github.com/gin-gonic/gin"
 )
