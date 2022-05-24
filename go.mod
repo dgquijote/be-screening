@@ -1,3 +1,4 @@
+// +heroku goVersion go1.18
 module github.com/dgquijote/be-screening
 
 go 1.18
