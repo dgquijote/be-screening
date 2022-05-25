@@ -1,4 +1,4 @@
-@host = localhost:8000
+@host = localhost
 // Register User
 POST http://{{host}}/api/user/register HTTP/1.1
 content-type: application/json
