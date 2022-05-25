@@ -17,13 +17,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	dburl := os.Getenv("DATABASE_URL")
-	dbuser := os.Getenv("DATABASE_USER")
-	dbpass := os.Getenv("DATABASE_PASSWORD")
-	dbname := os.Getenv("DATABASE_NAME")
-	dbport := os.Getenv("DATABASE_PORT")
-
-	connectionString := "host=" + dburl + " user=" + dbuser + " password=" + dbpass + " dbname=" + dbname + " port=" + dbport + " sslmode=require"
+	connectionString := os.Getenv("DATABASE_URL")
 	// Initialize Database
 	database.Connect(connectionString)
 	database.Migrate()
