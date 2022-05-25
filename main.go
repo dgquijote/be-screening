@@ -23,7 +23,7 @@ func main() {
 	dbname := os.Getenv("DATABASE_NAME")
 	dbport := os.Getenv("DATABASE_PORT")
 
-	connectionString := "host=" + dburl + " user=" + dbuser + " password=" + dbpass + " dbname=" + dbname + " port=" + dbport + " sslmode=disable"
+	connectionString := "host=" + dburl + " user=" + dbuser + " password=" + dbpass + " dbname=" + dbname + " port=" + dbport + " sslmode=require"
 	// Initialize Database
 	database.Connect(connectionString)
 	database.Migrate()
