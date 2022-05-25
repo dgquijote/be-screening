@@ -32,7 +32,8 @@ func MockConnect(connectionString string) {
 	log.Println("Connected to Database!")
 }
 
-type UserRequest struct {
+type User struct {
+	gorm.Model
 	Name     string `json:"name"`
 	Username string `json:"username" gorm:"unique"`
 	Email    string `json:"email" gorm:"unique"`
@@ -41,9 +42,9 @@ type UserRequest struct {
 }
 
 func Migrate() {
-	Instance.AutoMigrate(&UserRequest{})
+	Instance.AutoMigrate(&User{})
 
-	seller := UserRequest{
+	seller := User{
 		Email:    "test.seller@email.com",
 		Username: "test.seller",
 		Password: "123456789",
@@ -55,7 +56,7 @@ func Migrate() {
 
 	Instance.Create(&seller)
 
-	seller2 := UserRequest{
+	seller2 := User{
 		Email:    "test.seller2@email.com",
 		Username: "test.seller2",
 		Password: "123456789",
@@ -67,7 +68,7 @@ func Migrate() {
 
 	Instance.Create(&seller2)
 
-	user := UserRequest{
+	user := User{
 		Email:    "test.user@email.com",
 		Username: "test.user",
 		Password: "123456789",
@@ -79,7 +80,7 @@ func Migrate() {
 
 	Instance.Create(&user)
 
-	user2 := UserRequest{
+	user2 := User{
 		Email:    "test.user2@email.com",
 		Username: "test.user2",
 		Password: "123456789",
@@ -91,12 +92,12 @@ func Migrate() {
 
 	Instance.Create(&user2)
 
-	Instance.AutoMigrate(&UserRequest{})
+	Instance.AutoMigrate(&User{})
 
 	log.Println("Database Migration Completed!")
 }
 
-func (user *UserRequest) HashPassword(password string) error {
+func (user *User) HashPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return err
