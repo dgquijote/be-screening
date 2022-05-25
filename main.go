@@ -24,7 +24,8 @@ func main() {
 
 	// Initialize Router
 	router := initRouter()
-	router.Run("localhost")
+	port := os.Getenv("PORT")
+	router.Run("localhost:" + port)
 }
 
 func initRouter() *gin.Engine {
