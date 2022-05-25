@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/dgquijote/be-screening/auth"
+	"github.com/dgquijote/be-screening/database"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -11,6 +13,7 @@ type User struct {
 	Username string `json:"username" gorm:"unique"`
 	Email    string `json:"email" gorm:"unique"`
 	Password string `json:"password"`
+	IsSeller bool   `json:"is_seller"`
 }
 
 func (user *User) HashPassword(password string) error {
@@ -28,4 +31,14 @@ func (user *User) CheckPassword(providedPassword string) error {
 		return err
 	}
 	return nil
+}
+
+func GetUserByToken(tokenString string) (User, *gorm.DB) {
+	var user User
+
+	tokenUser := auth.TokenUser(tokenString)
+
+	record := database.Instance.Where("username = ?", tokenUser).First(&user)
+
+	return user, record
 }

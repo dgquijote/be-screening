@@ -3,18 +3,16 @@ package database
 import (
 	"log"
 
-	"github.com/dgquijote/be-screening/models"
-
-	"gorm.io/driver/mysql"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var Instance *gorm.DB
 var dbError error
 
 func Connect(connectionString string) {
-	Instance, dbError = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
+	Instance, dbError = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if dbError != nil {
 		log.Fatal(dbError)
 		panic("Cannot connect to Database!")
@@ -23,9 +21,10 @@ func Connect(connectionString string) {
 }
 
 func MockConnect(connectionString string) {
-	Instance, dbError = gorm.Open(mysql.Open(connectionString), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
-	})
+	Instance, dbError = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  connectionString,
+		PreferSimpleProtocol: true,
+	}))
 	if dbError != nil {
 		log.Fatal(dbError)
 		panic("Cannot connect to Database!")
@@ -33,45 +32,75 @@ func MockConnect(connectionString string) {
 	log.Println("Connected to Database!")
 }
 
-func Migrate() {
-	Instance.AutoMigrate(&models.User{})
+type UserRequest struct {
+	Name     string `json:"name"`
+	Username string `json:"username" gorm:"unique"`
+	Email    string `json:"email" gorm:"unique"`
+	Password string `json:"password"`
+	IsSeller bool   `json:"is_seller"`
+}
 
-	seller := models.User{
+func Migrate() {
+	Instance.AutoMigrate(&UserRequest{})
+
+	seller := UserRequest{
 		Email:    "test.seller@email.com",
 		Username: "test.seller",
 		Password: "123456789",
 		Name:     "Test Seller",
+		IsSeller: true,
 	}
 
 	seller.HashPassword(seller.Password)
 
 	Instance.Create(&seller)
 
-	seller2 := models.User{
-		Email:    "test.seller@email.com",
+	seller2 := UserRequest{
+		Email:    "test.seller2@email.com",
 		Username: "test.seller2",
 		Password: "123456789",
 		Name:     "Test Seller 2",
+		IsSeller: true,
 	}
 
 	seller2.HashPassword(seller2.Password)
 
 	Instance.Create(&seller2)
 
-	user := models.User{
+	user := UserRequest{
 		Email:    "test.user@email.com",
 		Username: "test.user",
 		Password: "123456789",
 		Name:     "Test User",
+		IsSeller: false,
 	}
 
 	user.HashPassword(user.Password)
 
 	Instance.Create(&user)
 
-	Instance.AutoMigrate(&models.Order{})
+	user2 := UserRequest{
+		Email:    "test.user2@email.com",
+		Username: "test.user2",
+		Password: "123456789",
+		Name:     "Test User 2",
+		IsSeller: false,
+	}
 
-	Instance.AutoMigrate(&models.OrderLogistics{})
+	user2.HashPassword(user2.Password)
+
+	Instance.Create(&user2)
+
+	Instance.AutoMigrate(&UserRequest{})
 
 	log.Println("Database Migration Completed!")
+}
+
+func (user *UserRequest) HashPassword(password string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return err
+	}
+	user.Password = string(bytes)
+	return nil
 }

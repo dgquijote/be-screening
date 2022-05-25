@@ -1,17 +1,40 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"net/http"
+
+	"github.com/dgquijote/be-screening/database"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
 type Order struct {
 	gorm.Model
-	SenderName      string `json:"sender_name"`
-	SenderContact   string `json:"sender_contact"`
-	SenderAddress   string `json:"sender_address"`
-	ReceiverName    string `json:"receiver_name"`
-	ReceiverContact string `json:"receiver_contact"`
-	ReceiverAddress string `json:"receiver_address"`
-	Item            string `json:"item"`
-	Weight          string `json:"weight"`
-	ItemAmount      string `json:"item_amount"`
-	ShippingFee     string `json:"shipping_fee"`
+	SellerId   int
+	Seller     User
+	ReceiverId int
+	Receiver   User
+	Item       string `json:"item"`
+	Weight     string `json:"weight"`
+	ItemAmount string `json:"item_amount"`
+}
+
+func GetAll(c *gin.Context) []Order {
+	tokenString := c.GetHeader("Authorization")
+
+	user, record := GetUserByToken(tokenString)
+
+	if record.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": record.Error.Error()})
+		c.Abort()
+		return nil
+	}
+	var orders []Order
+	if user.IsSeller {
+		database.Instance.Preload("Seller").Preload("Receiver").Where("seller_id = ?", user.ID).Find(&orders)
+	} else {
+		database.Instance.Preload("Seller").Preload("Receiver").Where("receiver_id = ?", user.ID).Find(&orders)
+	}
+
+	return orders
 }

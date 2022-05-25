@@ -1,0 +1,14 @@
+@host = localhost:8000
+
+// Access a Secured API Endpoint  
+POST http://{{host}}/api/order HTTP/1.1 
+content-type: application/json 
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QudXNlciIsImVtYWlsIjoidGVzdC51c2VyQGVtYWlsLmNvbSIsImV4cCI6MTY1MzQ0NDU0OH0.vxksy4TpWAPd1XIb13hYrtMYGUdUL7BOE1jEEvJLIzU
+
+{
+    "sender_id" : 1,
+    "item" : "Macbook Pro M1 Max (Space Gray)",
+    "item_amount" : "2499",
+    "weight" : "2.2kg"
+}
+###

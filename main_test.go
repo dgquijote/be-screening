@@ -3,19 +3,35 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/dgquijote/be-screening/controllers"
 	"github.com/dgquijote/be-screening/database"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	database.MockConnect("root:@tcp(localhost:3306)/delivery_app?parseTime=true")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dburl := os.Getenv("DATABASE_URL")
+	dbuser := os.Getenv("DATABASE_USER")
+	dbpass := os.Getenv("DATABASE_PASSWORD")
+	dbname := os.Getenv("DATABASE_NAME")
+	dbport := os.Getenv("DATABASE_PORT")
+
+	connectionString := "host=" + dburl + " user=" + dbuser + " password=" + dbpass + " dbname=" + dbname + " port=" + dbport + " sslmode=disable"
+	// Initialize Database
+	database.MockConnect(connectionString)
 	database.Migrate()
 }
 
@@ -67,7 +83,7 @@ func TestGenerateTokenInvalidPasswordHandler(t *testing.T) {
 	}
 
 	user := controllers.TokenRequest{
-		Email:    "seller@email.com",
+		Email:    "test.user@email.com",
 		Password: "000000000",
 	}
 
@@ -87,8 +103,8 @@ func TestGenerateTokenHandler(t *testing.T) {
 	}
 
 	user := controllers.TokenRequest{
-		Email:    "seller@email.com",
-		Password: "123465789",
+		Email:    "test.user@email.com",
+		Password: "123456789",
 	}
 
 	jsonValue, _ := json.Marshal(user)
@@ -97,7 +113,4 @@ func TestGenerateTokenHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestUserNotAuthenticatedHandler(t *testing.T) {
 }

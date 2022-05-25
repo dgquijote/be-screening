@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -55,4 +56,24 @@ func ValidateToken(signedToken string) (err error) {
 
 	return
 
+}
+
+func TokenUser(AuthKey string) string {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(AuthKey, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		return ""
+	}
+
+	for key, val := range claims {
+		if key == "username" {
+			valStr := fmt.Sprint(val)
+			return valStr
+		}
+	}
+
+	return ""
 }
