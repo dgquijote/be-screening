@@ -1,4 +1,4 @@
-@host = localhost:8000
+@host = localhost
 
 // Generate JWT  
 POST http://{{host}}/api/token HTTP/1.1 
