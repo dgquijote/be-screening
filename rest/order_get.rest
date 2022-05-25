@@ -1,4 +1,4 @@
-@host = localhost
+@host = localhost:8000
 
 // Access a Secured API Endpoint  
 GET http://{{host}}/api/order/ HTTP/1.1 
