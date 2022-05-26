@@ -1,4 +1,4 @@
-# Simple Order API application
+# Simple Order API in Go
 ## BE Screening Assignment 
 
 - Live @ (https://be-screening.herokuapp.com/)
