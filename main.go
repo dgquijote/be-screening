@@ -1,30 +1,32 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/dgquijote/be-screening/controllers"
 	"github.com/dgquijote/be-screening/database"
 	"github.com/dgquijote/be-screening/middlewares"
+	"github.com/dgquijote/be-screening/models"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	connectionString := os.Getenv("DATABASE_URL")
 	// Initialize Database
+	connectionString := os.Getenv("DATABASE_URL")
+	if connectionString == "" {
+		connectionString = "host=localhost user=postgres password= dbname=delivery_app port=5432"
+	}
 	database.Connect(connectionString)
-	database.Migrate()
+	models.MigrateUsers()
+	models.MigrateOrders()
+	models.MigrateOrderDetails()
 
 	// Initialize Router
 	router := initRouter()
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
 	router.Run(":" + port)
 }
 
@@ -36,7 +38,7 @@ func initRouter() *gin.Engine {
 		secured := api.Group("/order").Use(middlewares.Auth())
 		{
 			secured.GET("/", controllers.GetOrders())
-			// secured.GET("/:id", controllers.GetOrderById)
+			secured.GET("/:id", controllers.GetOrderById())
 			secured.POST("/", controllers.CreateOrder())
 		}
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,22 +10,19 @@ import (
 
 	"github.com/dgquijote/be-screening/controllers"
 	"github.com/dgquijote/be-screening/database"
-	"github.com/joho/godotenv"
+	"github.com/dgquijote/be-screening/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	connectionString := os.Getenv("DATABASE_URL")
 	// Initialize Database
 	database.MockConnect(connectionString)
-	database.Migrate()
+	models.MigrateUsers()
+	models.MigrateOrders()
+	models.MigrateOrderDetails()
 }
 
 func SetUpRouter() *gin.Engine {
@@ -37,10 +33,7 @@ func SetUpRouter() *gin.Engine {
 
 func TestGenerateNoRequestHandler(t *testing.T) {
 	r := SetUpRouter()
-	api := r.Group("/api")
-	{
-		api.POST("/token", controllers.GenerateToken)
-	}
+	r.POST("/api/token", controllers.GenerateToken)
 
 	req, _ := http.NewRequest("POST", "/api/token", nil)
 
@@ -51,10 +44,7 @@ func TestGenerateNoRequestHandler(t *testing.T) {
 
 func TestGenerateTokenInvalidUserHandler(t *testing.T) {
 	r := SetUpRouter()
-	api := r.Group("/api")
-	{
-		api.POST("/token", controllers.GenerateToken)
-	}
+	r.POST("/api/token", controllers.GenerateToken)
 
 	user := controllers.TokenRequest{
 		Email:    "someuser@email.com",
@@ -71,10 +61,7 @@ func TestGenerateTokenInvalidUserHandler(t *testing.T) {
 
 func TestGenerateTokenInvalidPasswordHandler(t *testing.T) {
 	r := SetUpRouter()
-	api := r.Group("/api")
-	{
-		api.POST("/token", controllers.GenerateToken)
-	}
+	r.POST("/api/token", controllers.GenerateToken)
 
 	user := controllers.TokenRequest{
 		Email:    "test.user@email.com",
@@ -91,10 +78,7 @@ func TestGenerateTokenInvalidPasswordHandler(t *testing.T) {
 
 func TestGenerateTokenHandler(t *testing.T) {
 	r := SetUpRouter()
-	api := r.Group("/api")
-	{
-		api.POST("/token", controllers.GenerateToken)
-	}
+	r.POST("/api/token", controllers.GenerateToken)
 
 	user := controllers.TokenRequest{
 		Email:    "test.user@email.com",

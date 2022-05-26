@@ -1,4 +1,4 @@
-@host = be-screening.herokuapp.com
+@host = localhost:8000
 
 // Generate JWT  
 POST http://{{host}}/api/token HTTP/1.1 

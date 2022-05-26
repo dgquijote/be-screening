@@ -1,13 +1,17 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dgquijote/be-screening/models"
 
 	"github.com/gin-gonic/gin"
 )
+
+type OrderReponse struct {
+	OrderDetails    models.Order
+	TrackingDetails []models.OrderDetails
+}
 
 func GetOrders() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -16,22 +20,26 @@ func GetOrders() gin.HandlerFunc {
 	}
 }
 
-func CreateOrder() gin.HandlerFunc {
+func GetOrderById() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		tokenString := c.GetHeader("Authorization")
-
-		user, record := models.GetUserByToken(tokenString)
-
-		if record.Error != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": record.Error.Error()})
-			c.Abort()
+		o := models.GetById(c)
+		if o.Id == 0 {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "order not found"})
 			return
 		}
+		d := models.GetOrderTrackingDetails(o.Id)
+		var result = OrderReponse{
+			OrderDetails:    o,
+			TrackingDetails: d,
+		}
 
-		fmt.Println(user.ID)
-		// requestBody := models.Order{}
-		// c.BindJSON(&requestBody)
+		c.IndentedJSON(http.StatusOK, result)
+	}
+}
 
+func CreateOrder() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		models.Add(c)
+		c.JSON(http.StatusCreated, gin.H{"message": "Order has been checked out."})
 	}
 }
